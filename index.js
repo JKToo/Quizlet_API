@@ -5,44 +5,54 @@ const cheerio = require('cheerio')
 const res = require('express/lib/response')
 const { contentDisposition } = require('express/lib/utils')
 
-const newspapers =[
+const content =[
     {
-        name: 'indeed',
-        address: 'https://www.indeed.com/jobs?q=software%20engineer%20intern&from=googlesl&vjk=44a0d1e66ce41202',
-        base: 'indeed.com'
+        name: 'quizlet',
+        address: 'https://quizlet.com/124679225/elementary-chinese-lesson-6-dialogue-vocabulary-1-flash-cards/',
+        base: 'quizlet.com'
     },
-    // {
-    //     name: 'glassdoor',
-    //     address: 'https://www.glassdoor.com/Job/software-engineer-intern-jobs-SRCH_KO0,24.htm',
-    //     base: ''
-    // },
 ]
 
 const app = express()   //Calling express and saving as app
+var answer = ""
+var question = ""
+const material = []
 
-const articles = []
+var count = 0
 
-const jobs = "job "
-var replaced = jobs.split(' ').join('_')
-newspapers.forEach(newspaper => {
-    axios.get(newspaper.address)
+content.forEach(site => {
+    axios.get(site.address)
     .then(response => {
+        
         const html = response.data
         const $ = cheerio.load(html) //Allows to pick out elements
-        $('a:contains("Internship")', html).each(function () {
-            const url = $(this).attr('href')   
+        // console.log('a.SetPageTerm-definitionText'.length)
+        // console.log('a.SetPageTerm-wordText'.length)
+        var size = '.SetPageTerm-wordText'.length
+        $('.SetPageTerm-wordText', html).each(function () {
+                 question = $(this).text() 
+                 var answer = ""
+               
+                // $('a.SetPageTerm-definitionText', html).each(function () 
+        
+                
+            $("span[class$='TermText notranslate lang-zh-TW']").each(function (index){
+                
+                    answer = $(this).text()                      
+                   
+                material.push({               
+                    question: question,                
+                    answer: answer,     
+                }) 
+                
+            })                        
            
-            $('h2:contains("")', html).each(function () {
-            const title = $(this).text() 
-                      
-            articles.push({
-                title,
-                url: newspaper.base + url,
-                source: newspaper.name,
-            })
-        })
+               
+         })  
+                 
+               
     })
-    })
+
 })
 
 //Listen and if visited, we get response
@@ -50,11 +60,18 @@ app.get('/', (req,res) => {
     res.json('Testing API')
 })
 
-app.get('/news', (req, res) => {
+app.get('/quiz', (req, res) => {
 
-  res.json(articles)
+  res.json(material)
 
 })
 
 app.listen(PORT, () => console.log('server running on ' + PORT)) //Backend
-
+  //     var company = $(this).text()
+  //         company = $(this).
+    //         $('h2:contains("")', html).each(function () {
+    //         const title = $(this).text() 
+    
+            // var type = $(this).parents('.SetPageTerms-term').children('.TermText notranslate lang-en').first().text()
+               
+                // var question = $(this)("a.SetPageTerm-wordText")
