@@ -9,61 +9,75 @@ const content =[
     {
         name: 'quizlet',
         address: 'https://quizlet.com/ca/558645040/csc-chapter-7-flash-cards/',
-        base: 'quizlet.com'
+        base: 'https://quizlet.com/'
     },
 ]
 
 const app = express()   //Calling express and saving as app
-var answer = ""
-var question = ""
-const material = []
-const t1 = []
-const t2 = []
-var i = 0
 
-content.forEach(site => {
-    axios.get(site.address)
-    .then(response => {
-    
-        const html = response.data
-        const $ = cheerio.load(html) //Allows to pick out elements
 
-        var size = '.SetPageTerm-wordText'.length
-        $('.SetPageTerm-wordText', html).each(function () {
-                 question = $(this).text() 
-                 var answer = ""
-               t1.push(question)
-                // $('a.SetPageTerm-definitionText', html).each(function () 
-        
-              
-            $("a[class$='SetPageTerm-definitionText']").each(function (index){                
-            
-                answer = $(this).text()             
-                t2.push(answer)
-            })                        
-           
-                material.push({               
-                    question: t1[i],                
-                    answer: t2[i],     
-                })            
-                i++
-         })  
-               
-            
-    })
-    
-  
-})
 
 //Listen and if visited, we get response
 app.get('/', (req,res) => {
     res.json('Testing API')
 })
 
-app.get('/quiz', (req, res) => {
 
-  res.json(material)
+//Passing ID
+app.get('/quiz/:quizURL(*)', async(req, res) => {
+
+    const quizletId = req.params.quizURL
+    
+    for(var i = 0; i < content.length; i++){
+        var temp = content[i]
+    }
+
+    const url = temp.base + quizletId
+    // console.log(url)
+    // console.log(content[0].address)
+
+    content[0].address = url
+    console.log(content[0].address)
+
+    
+
+    axios.get(content[0].address)
+    .then(response => {
+    
+        const html = response.data
+        const $ = cheerio.load(html) //Allows to pick out elements
+        var questionArr = []
+        var answerArr = []
+        var quizletArr = []
+        var questions
+        var answers
+        var j = 0
+        $('.SetPageTerm-wordText', html).each(function () {
+                 questions = $(this).text() 
+                 questionArr.push(questions)
+                // $('a.SetPageTerm-definitionText', html).each(function () 
+        
+              
+            $("a[class$='SetPageTerm-definitionText']").each(function (index){                
+            
+                answers = $(this).text()             
+                answerArr.push(answers)
+            })                        
+           
+            quizletArr.push({               
+                    question: questionArr[j],                
+                    answer: answerArr[j],     
+                })            
+                j++
+                
+
+         })  
+               
+    res.json(quizletArr)
+            
+    })
 
 })
+
 
 app.listen(PORT, () => console.log('server running on ' + PORT)) //Backend
