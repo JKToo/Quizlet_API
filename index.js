@@ -8,7 +8,7 @@ const { contentDisposition } = require('express/lib/utils')
 const content =[
     {
         name: 'quizlet',
-        address: 'https://quizlet.com/124679225/elementary-chinese-lesson-6-dialogue-vocabulary-1-flash-cards/',
+        address: 'https://quizlet.com/ca/558645040/csc-chapter-7-flash-cards/',
         base: 'quizlet.com'
     },
 ]
@@ -17,42 +17,42 @@ const app = express()   //Calling express and saving as app
 var answer = ""
 var question = ""
 const material = []
-
-var count = 0
+const t1 = []
+const t2 = []
+var i = 0
 
 content.forEach(site => {
     axios.get(site.address)
     .then(response => {
-        
+    
         const html = response.data
         const $ = cheerio.load(html) //Allows to pick out elements
-        // console.log('a.SetPageTerm-definitionText'.length)
-        // console.log('a.SetPageTerm-wordText'.length)
+
         var size = '.SetPageTerm-wordText'.length
         $('.SetPageTerm-wordText', html).each(function () {
                  question = $(this).text() 
                  var answer = ""
-               
+               t1.push(question)
                 // $('a.SetPageTerm-definitionText', html).each(function () 
         
-                
-            $("span[class$='TermText notranslate lang-zh-TW']").each(function (index){
-                
-                    answer = $(this).text()                      
-                   
-                material.push({               
-                    question: question,                
-                    answer: answer,     
-                }) 
-                
+              
+            $("a[class$='SetPageTerm-definitionText']").each(function (index){                
+            
+                answer = $(this).text()             
+                t2.push(answer)
             })                        
            
-               
+                material.push({               
+                    question: t1[i],                
+                    answer: t2[i],     
+                })            
+                i++
          })  
-                 
                
+            
     })
-
+    
+  
 })
 
 //Listen and if visited, we get response
@@ -67,11 +67,3 @@ app.get('/quiz', (req, res) => {
 })
 
 app.listen(PORT, () => console.log('server running on ' + PORT)) //Backend
-  //     var company = $(this).text()
-  //         company = $(this).
-    //         $('h2:contains("")', html).each(function () {
-    //         const title = $(this).text() 
-    
-            // var type = $(this).parents('.SetPageTerms-term').children('.TermText notranslate lang-en').first().text()
-               
-                // var question = $(this)("a.SetPageTerm-wordText")
