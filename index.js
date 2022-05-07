@@ -19,7 +19,7 @@ const app = express()   //Calling express and saving as app
 
 //Listen and if visited, we get response
 app.get('/', (req,res) => {
-    res.json('Testing API')
+    res.json('API Reached')
 })
 
 
