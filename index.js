@@ -8,7 +8,7 @@ const { contentDisposition } = require('express/lib/utils')
 const content =[
     {
         name: 'quizlet',
-        address: 'https://quizlet.com/ca/558645040/csc-chapter-7-flash-cards/',
+        address: '',
         base: 'https://quizlet.com/'
     },
 ]
